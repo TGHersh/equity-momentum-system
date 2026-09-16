@@ -1,0 +1,5 @@
+{
+    "NKE": {"name": "Nike", "sector_etf": "XLY", "next_earnings": "2026-09-29"},
+    "AAPL": {"name": "Apple", "sector_etf": "XLK", "next_earnings": null},
+    "JPM": {"name": "JPMorgan", "sector_etf": "XLF", "next_earnings": null}
+}

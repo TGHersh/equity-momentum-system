@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, intial-scale=1">
+    <title>{{ s.ticker }} &middot; Market dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+
+<header>
+   <div>
+    <h1>Market dashboard</h1>
+    <div class="stamp">Prices through {{ d.data_through }} &middot; built {{ d.generated_at }}</div>
+   </div>
+   <nav class="picker">
+    <label for="ticker-select">Ticker</label>
+    <select id="ticker-select" onchange="window.location = '/stock/' + this.value">
+        {% for t in d.tickers %}
+        <option value="{{ t }}" {% if t == s.ticker %}selected{% endif %}>{{ t }} &middot; {{ d.subjects[t].name }}</option>
+        {% endfor %}
+    </select>
+   </nav>
+</header>
+
+<section class="panel">
+    <h2>{{ s.name }} ({{ s.ticker }})</h2>
+
+    <div class="price">${{ '%.2f'|format(s.price) }}<small>{{ s.as_of }}</small></div>
+
+    <div class="chips">
+        <div class="chip"><span>1d</span><b class="{{ s.chg_1d|dir }}">{{ s.chg_1d|arrow }} {{ s.chg_1d|pct }}</b></div>
+        <div class="chip"><span>1m</span><b class="{{ s.chg_1m|dir }}">{{ s.chg_1m|arrow }} {{ s.chg_1m|pct }}</b></div>
+        <div class="chip"><span>since start</span><b class="{{ s.chg_all|dir }}">{{ s.chg_all|arrow }} {{ s.chg_all|pct }}</b></div>
+        <div class="chip"><span>volume vs 20d avg</span><b class="{{ s.vol_vs_avg|dir }}">{{ s.vol_vs_avg|pct(0) }}</b></div>
+    </div>
+
+    <div class="range">
+        <div class="stamp">52-week range &mdash; {{ s.off_high|pct }} from high, {{ s.above_low|pct }} above low</div>
+        <div class="range-track"><div class="range-mark" style="left: {{ '%.1f'|format(s.range_pos) }}%"></div></div>
+        <div class="range-ends"><span>${{ '%.2f'|format(s.low_52w) }}</span><span>${{ '%.2f'|format(s.high_52w) }}</span></div>
+    </div>
+</section>
+
+<div class="grid2">
+    <section class="panel">
+        <h2>Next earnings</h2>
+        {% if s.earnings_date %}
+        <div class>"countdown">
+            <b>{{ s.days_to_earnings }}</b><span>days &mdash; {{ s.earnings_date }}</span>
+        </div>
+        <p class="note">Confirm on {{ s.name }}'s investor relations page. A report inside your holding window 
+            will move the price more than anything else on this dashboard.</p>
+        {% else %}
+        <div class="countdown"><b>&ndash;</b><span>not set</span></div>
+        <p class="note">Add <code>next_earnings</code> to {{ s.ticker }}'s record in tickers.json.</p>
+        {% endif %}
+    </section>
+
+    <section class="panel">
+        <h2>Market volatility</h2>
+        <div class="countdown">
+            <b>{{ '%.1f'|format(d.spy_vol_20d) }}%</b><span>SPY, 20-day annualised</span>
+        </div>
+        <p class="note">Realised volatility, computed from daily returns &mdash; not an implied measure.</p>
+    </section>
+</div>
+    
+<section class="panel">
+    <h2>{{ s.ticker }} vs SPY and {{ s.sector_etf }} &mdash; last 120 days, rebased to 100</h2>
+    {% set colors = ['var(--s1)', 'var(--s2)', 'var(--s3)'] %}
+    <svg class="chart" viewBox="0 0 300 60" preserveAspectRation="none" role="img"
+        aria-label="Relative performance of {{ s.ticker }} against benchmarks">
+      {% for r in chart %}
+        <polyline points="{{ r.points }}" fill="none"
+                  stroke="{{ colors[loop.index0 % 3] }}" stroke-width="1.5"
+                  vector-effect="non-scaling-stroke" />
+      {% endfor %}
+    </svg>
+    <div class="legend">
+      {% for r in chart %}
+        <span>i style="background: {{ colors[loop.index0 % 3] }}"></i>{{ r.ticker }} {{ r.indexed }}</span>
+      {% endfor %}  
+    </div>
+    <p class="note">Each series divided by its own price 120 days ago, then all three drawn on one
+      shared scale. Above 100 means it has gained over the window</p>
+</section>
+
+<section class="panel">
+    <h2>Sectors today</h2>
+    <table>
+        <tr><th colspan="2">Sector</th><th class="num">1day</th><th class="num">1 month</th></tr>
+        {% for r in d.sectors %}
+        <tr>
+            <td class="tkr">{{ r.ticker }}</td>
+            <td class="name">{{ r.label }}</td>
+            <td class="num {{ r.chg_1d|dir }}">{{ r.chg_1d|arrow }} {{ r.chg_1d|pct }}</td>
+            <td class="num {{ r.chg_1m|dir }}">{{ r.chg_1m|pct }}</td>
+        </tr>
+         {% endfor %}
+    </table>
+    <p class="note">All eleven green is a broad rally; one or two green is a narrow one. Tells you whether
+      a move in {{ s.ticker }} was its own story or the market's.</p>
+</section>
+
+<section class="panel">
+    <h2>Commodities &amp; macro</h2>
+    <table>
+        <tr><th colspan="2">Instrument</th><th class="num">Last</th><th class="num">1d</th><th class="num">1m</th></tr>
+        {% for r in d.macro %}
+        <tr>
+            <td class="tkr">{{ r.ticker }}</td>
+            <td class="name">{{ r.label }}</td>
+            <td class="num">${{ '%.2f'|format(r.price) }}</td>
+            <td class="num {{ r.chg_1d|dir }}">{{ r.chg_1d|arrow }} {{ r.chg_1d|pct }}</td>
+            <td class="num {{ r.chg_1m|dir }}">{{ r.chg_1m|pct }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p class="note">ETF proxies, tracking futures rather than spot &mdash; good for trend, not for exact levels.</p>
+</section>
+
+{% if news and news['items'] and news['ticker'] == s.ticker %}
+<section class="panel">
+    <h2>News &amp; filings</h2>
+    <ul class="news">
+        {% for item in news['items'] %}
+        <li>
+            <a href="{{ item.link }}" target="_blank" rel="noopener">{{ item.title }}</a>
+            <div class="stamp">{{ item.source }}{% if item.when %} &middot; {{ item.when }}{% endif %}</div>
+        </li>
+        {% endfor %}
+    </ul>
+    <p class="note">Filtered to {{ s.ticker }} and its competitors. Fetched {{ news ['fetched_at'] }}.</p>
+</section>
+{% endif %}
+
+
+
+</body>
+</html>

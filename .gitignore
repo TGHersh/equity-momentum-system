@@ -1,0 +1,7 @@
+.env
+.venv/
+data/
+*.png
+__pycache__/
+logs/
+*.save
