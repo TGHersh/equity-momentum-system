@@ -1,8 +1,14 @@
 """Resolve tickers to SEC CIK numbers."""
+import os 
+from dotenv import load_dotenv
 import json
 import urllib.request
 
-AGENT = "Turner Dashboard turnerhershey1@gmail.com"
+load_dotenv()
+AGENT = os.getenv("SEC_USER_AGENT")
+if not AGENT:
+    raise SystemExit("SEC_USER_AGENT is not set in .env — the SEC requires a contact address")
+    
 WANT = {"NKE", "DECK", "ONON", "UAA", "SKX"}
 
 req = urllib.request.Request(

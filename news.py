@@ -1,11 +1,16 @@
 """Fetch RSS feeds, keep what's relevant, write data/news.json."""
+import os 
+from dotenv import load_dotenv
 import json
 import re
 from datetime import datetime, timezone
 import feedparser
 import urllib.request
 
-AGENT = "Turner Dashboard turnerhershey1@gmail.com"
+load_dotenv()
+AGENT = os.getenv("SEC_USER_AGENT")
+if not AGENT:
+    raise SystemExit("SEC_USER_AGENT is not set in .env — the SEC requires a contact address")
 
 SUBJECT = "NKE"
 
