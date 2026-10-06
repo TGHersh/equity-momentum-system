@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Paper account &middot; Market dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header>
+    <div>
+        <h1>Paper account</h1>
+        <div class="stamp">Current to {{ state.as_of or 'never run' }}</div>
+    </div>
+    <nav class="picker"><a href="{{ url_for('home') }}">Dashboard</a></nav>
+</header>
+
+<section class="panel">
+    <h2>Equity</h2>
+    <div class="countdown">
+        <b>{{ '{:,.0f}'.format(state.cash + value) }}</b>
+        <span>{{ '{:+.2%}'.format((state.cash + value) / start - 1) }} since inception
+            &middot; {{ '{:,.0f}'.format(state.cash) }} cash</span>
+    </div>
+    <svg class>="chart" viewBox="0 0 300 60" preserveAspectRatio="none" role="img"
+        aria-label="Paper account equity curve">
+     {% for r in chart %}
+       <polyline points="{{ r.points }}" fill="none" stroke="var(--s1)"
+                 stroke-width="1.5" vector-effect="non-scaling-stroke" />
+     {% endfor %}
+    </svg>
+</section>
+
+<section class="panel">
+    <h2>Positions ({{ rows|length }})</h2>
+    <table>
+        <tr><th>Ticker</th><th>Shares</th><th>Avg</th><th>Last</th><th>Value</th><th>P&amp;L</th></tr>
+        {% for r in rows %}
+        <tr>
+            <td><a href="{{ url_for('stock', ticker=r.ticker) }}">{{ r.ticker }}</a></td>
+            <td>{{ r.shares }}</td>
+            <td>{{ '%.2f'|format(r.avg_price) }}</td>
+            <td>{{ '%.2f'|format(r.last) }}</td>
+            <td>{{ '{:,.0f}'.format(r.value) }}</td>
+            <td class="{{ 'up' if r.pnl_pct >= 0 else 'down' }}">{{ '%+.1f'|format(r.pnl_pct) }}%</td>
+        </tr>
+        {% endfor %}
+    </table>
+</section>
+
+{% if pending %}
+<section class="panel">
+    <h2>Pending</h2>
+    {% for p in pending %}
+    <p class="note">Decided {{ p.decided_on }} &middot; {{ p.orders|length }} orders
+        &middot; fills at the next trading day's open</p>
+    {% endfor %}
+</section>
+{% endif %}
+
+<section class="panel">
+    <h2>Recent fills</h2>
+    <table>
+        <tr><th>Date</th><th>Ticker</th><th>Side</th><th>Shares</th><th>Price</th></tr>
+        {% for f in fills %}
+        <tr><td>{{ f.date }}</td><td>{{ f.ticker }}</td>
+            <td class="{{ 'up' if f.side == 'buy' else 'down' }}">{{ f.side }}</td>
+            <td>{{ f.shares }}</td><td>{{ '%.2f'|format(f.price|float) }}</td></tr>
+        {% endfor %}
+    </table>
+    <p class="note">Fills are at the open of the first trading day after each decision,
+        with {{ 8 }} bp of cost applied per side.</p>
+    </p>
+</section>
+</body>
+</html>

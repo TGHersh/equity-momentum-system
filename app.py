@@ -1,6 +1,9 @@
 """The web app. Reads the prepared JSON ans renders it. Does no data work"""
 
 import json
+import csv
+import os
+import glob
 from pathlib import Path
 
 from flask import Flask, abort, redirect, render_template, url_for
@@ -88,6 +91,42 @@ def stock(ticker):
     return render_template("dashboard.html", d=d, s=s,
                            chart=build_chart(s["relative"]), news=load_news())
     
+@app.route("/paper")
+def paper():
+    state = json.load(open("data/portfolio.json"))
+    closes = {}
+    for row in csv.DictReader(open("data/prices_daily.csv")):
+        closes[row["ticker"]] = float(row["close"])     # file is date-ordered: last wins
+
+    rows = []
+    for ticker, p in sorted(state["positions"].items()):
+        last = closes.get(ticker, p["avg_price"])
+        rows.append({"ticker": ticker, "shares": p["shares"],
+                     "avg_price": p["avg_price"], "last": last, 
+                     "value": p["shares"] * last, 
+                     "pnl_pct": (last / p["avg_price"] - 1) * 100})
+    
+    equity = list(csv.DictReader(open("data/equity.csv"))) if os.path.exists("data/equity.csv") else []
+    curve = [float(r["equity"]) for r in equity]
+    fills = list(csv.DictReader(open("data/ledger.csv")))[-15:][::-1] if os.path.exists("data/ledger.csv") else []
+    pending = [json.load(open(p)) for p in sorted(glob.glob("data/orders/*.json"))]
+    pending = [p for p in pending if p["status"] == "pending"]
+
+    return render_template("paper.html", state=state, rows=rows, fills=fills,
+                           pending=pending, curve=curve,
+                           value=sum(r["value"] for r in rows), 
+                           start=float(equity[0]["equity"]) if equity else 100000.0,
+                           chart=build_chart([{"ticker": "equity", "spark": curve, 
+                                               "indexed": curve[-1] if curve else 0}]))
+
+
+
+
+
+
+
+
+
 
 @app.errorhandler(404)
 def not_found(error):

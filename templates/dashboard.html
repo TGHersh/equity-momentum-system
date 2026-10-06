@@ -15,6 +15,7 @@
     <div class="stamp">Prices through {{ d.data_through }} &middot; built {{ d.generated_at }}</div>
    </div>
    <nav class="picker">
+    <a href="{{ url_for('paper') }}">Paper account</a>
     <label for="ticker-select">Ticker</label>
     <select id="ticker-select" onchange="window.location = '/stock/' + this.value">
         {% for t in d.tickers %}

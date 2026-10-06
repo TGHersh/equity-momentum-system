@@ -45,7 +45,12 @@ header {
     border: 1px solid var(--border); border-radius: 8px;
     background: var(--panel); color: var(--ink)
  }
-
+ .picker a {
+    font-size: 0.82rem; color: var(--ink); text-decoration: none;
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 6px 10px; margin-right: 10px;
+ }
+.picker a:hover { background: var(--border); }
  code {
     font-size: 0.85em; background: var(--border);
     padding: 1px 5px; border-radius: 4px;

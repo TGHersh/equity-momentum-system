@@ -38,7 +38,7 @@ def save(state):
 def reset():
     """Start the paper account over. Used by replay.py and nothing else."""
     for p in (LEDGER, EQUITY):
-        p.unlike(missing_ok=True)
+        p.unlink(missing_ok=True)
     save(fresh())
 
 

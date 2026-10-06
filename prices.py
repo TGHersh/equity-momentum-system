@@ -68,7 +68,7 @@ def latest_close(as_of, tickers):
 
 def opens_on(day, tickers):
     """{ticker: open} for exactly that date. Missing tickers are simply absent."""
-    df = load_prices(ticker, start=day, end=day)
+    df = load_prices(tickers, start=day, end=day)
     return df.set_index("ticker")["open"].to_dict()
 
 
