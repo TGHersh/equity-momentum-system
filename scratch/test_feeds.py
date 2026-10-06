@@ -1,7 +1,10 @@
 """Test candidate news feeds before adding them."""
+import os 
+from dotenv import load_dotenv
 import feedparser
 
-AGENT = "Turner Dashboard turnerherhsey1@gmail.com"
+load_dotenv()
+AGENT = os.getenv("SEC_USER_AGENT")
 
 CANDIDATES = [
     ("CNBC markets", "https://www.cnbc.com/id/100003114/device/rss/rss.html"),
