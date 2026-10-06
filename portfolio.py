@@ -1,6 +1,6 @@
 """The paper account's state, and the only code that changes it.
 
-data/portfolio.json   cash, positons, the date it is current to 
+data/portfolio.json   cash, positions, the date it is current to 
 data/ledger.csv       every fill that has ever happened
 data/equity.csv       one row per day: cash, positions value, total
 """
@@ -43,7 +43,7 @@ def reset():
 
 
 def buy(state, ticker, shares, price):
-    """And shares at price, updating the average cost."""
+    """Add shares at price, updating the average cost."""
     pos = state["positions"].get(ticker, {"shares": 0, "avg_price": 0.0})
     total = pos["shares"] + shares
     pos["avg_price"] = (pos["shares"] * pos["avg_price"] + shares * price) / total

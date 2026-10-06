@@ -1,4 +1,4 @@
-"""FInd out how far back your Massive plan actually reaches."""
+"""Find out how far back your Massive plan actually reaches."""
 import os 
 from datetime import date, timedelta
 

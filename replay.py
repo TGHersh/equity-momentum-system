@@ -2,7 +2,7 @@
 
 This is NOT a backtest and its equity curve is not evidence of anything. The
 universe was chosen with hindsight and the costs are a guess. What it proves is
-that the state machine works: orders get writte, sit pending, fill on a later 
+that the state machine works: orders get written, sit pending, fill on a later 
 day at a price nobody knew, and the account adds up. 
 
     python3 replay.py 2026-06-01

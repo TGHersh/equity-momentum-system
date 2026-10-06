@@ -1,4 +1,4 @@
-"""The web app. Reads the prepared JSON ans renders it. Does no data work"""
+"""The web app. Reads the prepared JSON and renders it. Does no data work"""
 
 import json
 import csv
@@ -53,7 +53,7 @@ def direction(value):
 def build_chart(relative, width=300, height=60, pad=3):
     """Scale every series on ONE shared range, so the lines stay comparable.
 
-    Scaling each series to its own min and max would make thema all fill the box
+    Scaling each series to its own min and max would make them all fill the box
     and silently destroy the comparison - the same mistake as a second y-axis
     """
     everything = [v for r in relative for v in r["spark"]]
@@ -77,7 +77,7 @@ def build_chart(relative, width=300, height=60, pad=3):
 
 @app.route("/")
 def home():
-    """The bare URL sends you to the first ticker in ticker.json."""
+    """The bare URL sends you to the first ticker in tickers.json."""
     d = load_dashboard()
     return redirect(url_for("stock", ticker=d["tickers"][0]))
 

@@ -1,7 +1,7 @@
 """The one place that knows which tickers the dashboard is about.
 
 Every script imports load_tickers() from here rather than reading the file itself, 
-so the filename and format are decide exactly once.
+so the filename and format are decided exactly once.
 """
 import json
 from pathlib import Path

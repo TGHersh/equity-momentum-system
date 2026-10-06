@@ -1,11 +1,11 @@
 """The trading rule: 12-1 momentum, cross-sectionally ranked.
 
 For each stock, the return from 12 months ago to 1 month ago. The most recent
-month is deliverately skipped -- short-horizon returns tend to REVERSE, so 
+month is deliberately skipped -- short-horizon returns tend to REVERSE, so 
 including them fights the signal. This is the standard construction from the 
 academic literature (Jegadeesh & Titman, 1993), used here unchanged.
 
-Nothing here is fitted. No parameter was chosen by looking at our data, so
+Nothing here is fitted. No parameter was chosen by looking at my data, so
 there is nothing to overfit and nothing to validate.
 """
 

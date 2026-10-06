@@ -1,6 +1,6 @@
 """Read prices. The only module that knows where they live.
 
-Sprint vefsion: reads data/prices_daily.csv and applies data/splits.csv on read.
+Sprint version: reads data/prices_daily.csv and applies data/splits.csv on read.
 Phase B replaces the inside of load_prices() with a parquet store. The signature
 does not change, so nothing that calls it needs to.
 """
