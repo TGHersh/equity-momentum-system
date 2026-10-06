@@ -5,7 +5,7 @@ universe was chosen with hindsight and the costs are a guess. What it proves is
 that the state machine works: orders get writte, sit pending, fill on a later 
 day at a price nobody knew, and the account adds up. 
 
-    python3 replay.py 2026-06-01 (check this date)
+    python3 replay.py 2026-06-01
 """
 import shutil 
 import sys 
