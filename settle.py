@@ -17,7 +17,7 @@ from config import load_universe
 from prices import latest_close, opens_on, trading_days
 
 ORDERS = Path("data/orders")
-COST_BPS = 8            # spread + comission + slippage, per side
+COST_BPS = 8            # spread + commission + slippage, per side
 
 
 def fill_price(price, side):

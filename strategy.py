@@ -16,7 +16,7 @@ from prices import load_prices, trading_days
 
 LOOKBACK = 252         # trading days ~ 12 months
 SKIP = 21              # trading days ~ 1 month, dropped from end
-N_HOLD = 10            # how many names hold
+N_HOLD = 10            # how many names to hold
 
 
 def momentum(as_of, tickers=None):
