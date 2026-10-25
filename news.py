@@ -90,7 +90,10 @@ COMPANIES = [
 ]
 
 RSS_FEEDS = [
-    ("CNBC markets", "https://www.cnbc.com/id/100003114/device/rss/rss.html", False),
+   # ("CNBC markets", "https://www.cnbc.com/id/100003114/device/rss/rss.html", False),
+   # Dropped Oct 2026. The keyword filter was built for a discretionary thesis
+   # about one company; a rule-based strategy doesn't consume headlines, so it 
+   # matched 0 of 30 every run. SEC filings stay - those are company-specific.
 ]
 
 KEYWORDS = ["nike", "nke", "jordan brand", "converse",

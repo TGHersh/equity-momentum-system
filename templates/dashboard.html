@@ -69,7 +69,7 @@
 </div>
     
 <section class="panel">
-    <h2>{{ s.ticker }} vs SPY and {{ s.sector_etf }} &mdash; last 120 days, rebased to 100</h2>
+    <h2>{{ s.ticker }} vs SPY{% if s.sector_etf != 'SPY' %} and {{ s.sector_etf }}{% endif %} &mdash; last 120 days, rebased to 100</h2>
     {% set colors = ['var(--s1)', 'var(--s2)', 'var(--s3)'] %}
     <svg class="chart" viewBox="0 0 300 60" preserveAspectRation="none" role="img"
         aria-label="Relative performance of {{ s.ticker }} against benchmarks">
@@ -81,10 +81,10 @@
     </svg>
     <div class="legend">
       {% for r in chart %}
-        <span>i style="background: {{ colors[loop.index0 % 3] }}"></i>{{ r.ticker }} {{ r.indexed }}</span>
+        <span><i style="background: {{ colors[loop.index0 % 3] }}"></i>{{ r.ticker }} {{ r.indexed }}</span>
       {% endfor %}  
     </div>
-    <p class="note">Each series divided by its own price 120 days ago, then all three drawn on one
+    <p class="note">Each series divided by its own price 120 days ago, then drawn on one
       shared scale. Above 100 means it has gained over the window</p>
 </section>
 

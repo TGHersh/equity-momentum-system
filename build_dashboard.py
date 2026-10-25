@@ -7,7 +7,7 @@ from datetime import date, datetime, timezone
 
 import pandas as pd
 
-from config import load_tickers
+from config import  all_tickers, load_tickers, load_universe
 
 MARKET = "SPY"         # every subject is compared to this
 
@@ -84,7 +84,7 @@ def build_subject(df, ticker, cfg):
         "vol_vs_avg": pct(float(last["volume"]), float(avg_vol)),
         "days_to_earnings": (nxt - last["date"].date()).days if nxt else None,
         "earnings_date": nxt.strftime("%d %b %Y") if nxt else None,
-        "relative": build_relative(df, [ticker, MARKET, cfg["sector_etf"]]),
+        "relative": build_relative(df, list(dict.fromkeys([ticker, MARKET, cfg["sector_etf"]]))),
     }
    
 
@@ -140,10 +140,24 @@ def main():
             continue
         subjects[ticker] = build_subject(df, ticker, record)
 
+    curated = list(subjects)        # the dropdown stays short
+
+    # Every universe ticker gets a page too, with a minimal record: no news, no
+    # earnings date, benchmarked against the market rather than its own sector.
+    # This is what make the holdings on /paper clickable.
+    for ticker in load_universe():
+        if ticker in subjects or ticker not in have:
+            continue
+        subjects[ticker] = build_subject(df, ticker, {
+            "name": ticker, 
+            "sector_etf": MARKET, 
+            "next_earnings": None,
+        })
+
     payload = {
         "generated_at": datetime.now(timezone.utc).strftime("%d %b %Y %H:%M UTC"),
         "data_through": df["date"].max().strftime("%d %b %Y"),
-        "tickers": list(subjects),
+        "tickers": curated,
         "subjects": subjects, 
         "sectors": build_rows(df, SECTORS),
         "macro": build_rows(df, MACRO),

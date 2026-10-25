@@ -105,17 +105,31 @@ def main(as_of=None):
 
     assert state["cash"] >= -0.01, f"cash went negative: {state['cash']}"
 
-    closes = latest_close(as_of, load_universe() + list(state["positions"]))
-    value = portfolio.market_value(state, closes)
+    # Mark to market for every trading day that has appeared since the last one
+    # recorded, not just the newest. The store can gain two trading days at once
+    # (Monday's run reaches back to Saturday, covering Thursday and Friday), and
+    # writing a row for each is what keeps the equity curve a complete series.abs
+    tickers = load_universe() + list(state["positions"])
 
-    today = str(as_of.date())
-    if state ["as_of"] is None or today > state["as_of"]:  # forward only, once per day
-        portfolio.append_equity(today, state["cash"], value)
-        state["as_of"] = today
-    portfolio.save(state)
+    if state["as_of"] is None:
+        pending = days[-1]                  # fresh account: today only
+    else:
+        pending = days[days > pd.Timestamp(state["as_of"])]
+    
+    for day in pending:
+        closes = latest_close(day, tickers)
+        portfolio.append_equity(str(day.date()), state["cash"],
+                                portfolio.market_value(state, closes))
+        state["as_of"] = str(day.date())
 
-    print(f" cash {state['cash']:,.0f} + positions {value:,.0f} = "
-          f"equity {state['cash'] + value:,.0f} across {len(state['positions'])} names")
+        portfolio.save(state)
+
+        closes = latest_close(as_of, tickers)
+        value = portfolio.market_value(state, closes)
+        print(f"  cash {state['cash']:,.0f} + positions {value:,.0f} = "
+              f"equity {state['cash'] + value:,.0f} across {len(state['positions'])} names")
+
+        
 
 
 if __name__ == "__main__":
